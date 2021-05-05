@@ -309,7 +309,7 @@
     <div class="videoCenter container justify-content-center">
       <div class="row">
         <div class="col-12">
-          <video
+          <!-- <video
             id="videoUI"
             width="80%"
             height="auto"
@@ -327,10 +327,16 @@
               type="video/mp4"
             />
             Your browser does not support HTML video.
-          </video>
+          </video> -->
+
+          <iframe id="videoUI" src="https://player.vimeo.com/video/543486921?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:80%;height:80%;" title="cardVideo.mp4"></iframe>
         </div>
       </div>
-    </div>
+    </div> 
+    <!-- <div style="padding:56.25% 0 0 0;position:relative;"> 
+      <iframe src="https://player.vimeo.com/video/543486921?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:80%;height:80%;" title="cardVideo.mp4"></iframe>
+    </div> -->
+    <script src="https://player.vimeo.com/api/player.js"></script>
 
     <div class="clickDiv" id="clickDiv"></div>
 
@@ -439,76 +445,83 @@
       console.log(vimeoPlayer.player);
       // ************ Vimeo Stuff ************ //
 
-      scene.addEventListener("markerLost", evt => {
-        console.log("Pausing");
-        vimeoPlayer.player.pause();
-        // Lbutton.style.visibility = "hidden";
-        // Pbutton.style.visibility = "hidden";
-        // Wbutton.style.visibility = "hidden";
-        // Ybutton.style.visibility = "hidden";
-        // bottomInstruction.style.visibility = "visible";
-        console.log("Pausing");
+      // vimeoPlayer.player.pause();
 
-        allow_clicks = false;
-        // vidCurrentTime = Video_0.currentTime;
-        if (!firstforvideoui) {
-          videoUI.style.visibility = "visible";
-          // videoUI.currentTime = vidCurrentTime;
-          videoUI.play();
-        }
-        if (!allow_clicks && !clicked) {
-          bottomInstruction.style.visibility = "visible";
-          midImage.style.visibility = "visible";
-        }
+      vimeoPlayer.player.on('videoLoad', function(data) {
+        console.log("Video Loaded !!!");
+
+        scene.addEventListener("markerLost", evt => {
+          console.log("Pausing");
+          vimeoPlayer.player.pause();
+          // Lbutton.style.visibility = "hidden";
+          // Pbutton.style.visibility = "hidden";
+          // Wbutton.style.visibility = "hidden";
+          // Ybutton.style.visibility = "hidden";
+          // bottomInstruction.style.visibility = "visible";
+          console.log("Pausing");
+
+          allow_clicks = false;
+          // vidCurrentTime = Video_0.currentTime;
+          if (!firstforvideoui) {
+            videoUI.style.visibility = "visible";
+            // videoUI.currentTime = vidCurrentTime;
+            videoUI.play();
+          }
+          if (!allow_clicks && !clicked) {
+            bottomInstruction.style.visibility = "visible";
+            midImage.style.visibility = "visible";
+          }
+        });
+
+        scene.addEventListener("markerFound", evt => {
+          //vimeoPlayer.player.play();
+          console.log("playing");
+          // Lbutton.style.visibility = "visible";
+          // Pbutton.style.visibility = "visible";
+          // Wbutton.style.visibility = "visible";
+          // Ybutton.style.visibility = "visible";
+          // bottomInstruction.style.visibility = "hidden";
+
+          firstTimeMarkerFound += 1;
+
+          if (firstTimeMarkerFound > 1) {
+            bottomInstruction.style.visibility = "hidden";
+            midImage.style.visibility = "hidden";
+            clickDiv.style.visibility = "visible";
+            allow_clicks = true;
+            console.log(allow_clicks);
+          }
+
+          if (!firstTime) {
+            vimeoPlayer.player.play();
+            // Video_0.currentTime = vidCurrentTime;
+            // Video_0.play();
+            videoUI.style.visibility = "hidden";
+            videoUI.pause();
+            // vidCurrentTime = videoUI.currentTime;
+          }
+        });
+
+        clickDiv.addEventListener("click", evt => {
+          console.log("Click Event !!!");
+          if (allow_clicks) {
+            console.log("Inside Allow clickDiv");
+            // thumbnail.setAttribute("visible", false);
+            Lbutton.style.visibility = "visible";
+            Pbutton.style.visibility = "visible";
+            Wbutton.style.visibility = "visible";
+            Ybutton.style.visibility = "visible";
+
+            videoUI.play();
+            videoUI.pause();
+
+            vimeoPlayer.player.play();
+            firstTime = false;
+            firstforvideoui = false;
+            clicked = true;
+          }
       });
 
-      scene.addEventListener("markerFound", evt => {
-        //vimeoPlayer.player.play();
-        console.log("playing");
-        // Lbutton.style.visibility = "visible";
-        // Pbutton.style.visibility = "visible";
-        // Wbutton.style.visibility = "visible";
-        // Ybutton.style.visibility = "visible";
-        // bottomInstruction.style.visibility = "hidden";
-
-        firstTimeMarkerFound += 1;
-
-        if (firstTimeMarkerFound > 1) {
-          bottomInstruction.style.visibility = "hidden";
-          midImage.style.visibility = "hidden";
-          clickDiv.style.visibility = "visible";
-          allow_clicks = true;
-          console.log(allow_clicks);
-        }
-
-        if (!firstTime) {
-          vimeoPlayer.player.play();
-          // Video_0.currentTime = vidCurrentTime;
-          // Video_0.play();
-          videoUI.style.visibility = "hidden";
-          videoUI.pause();
-          // vidCurrentTime = videoUI.currentTime;
-        }
-      });
-
-      clickDiv.addEventListener("click", evt => {
-        console.log("Click Event !!!");
-        if (allow_clicks) {
-          console.log("Inside Allow clickDiv");
-          // thumbnail.setAttribute("visible", false);
-          Lbutton.style.visibility = "visible";
-          Pbutton.style.visibility = "visible";
-          Wbutton.style.visibility = "visible";
-          Ybutton.style.visibility = "visible";
-
-          videoUI.play();
-          videoUI.pause();
-
-          vimeoPlayer.player.play();
-          firstTime = false;
-          firstforvideoui = false;
-          clicked = true;
-        }
       });
 
       Lbutton.addEventListener("click", function(evt) {
