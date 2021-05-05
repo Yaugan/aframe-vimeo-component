@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Vimeo A-Frame Component</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <script
+      type="text/javascript"
+      src="https://aframe.io/releases/1.2.0/aframe.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="aframe-vimeo-component.min.js"
+    ></script>
+    <!--     <script
+      type="text/javascript"
+      src="https://cdn.rawgit.com/jeromeetienne/AR.js/1.7.2/aframe/build/aframe-ar.min.js"
+    ></script> -->
+    <script
+      type="text/javascript"
+      src="https://cdn.rawgit.com/donmccurdy/aframe-extras/v6.0.0/dist/aframe-extras.min.js"
+    ></script>
+    <!--     <script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@1c2407b26c61958baa93967b5412487cd94b290b/dist/aframe-master.min.js"></script> -->
+    <script src="https://rawcdn.githack.com/Yaugan/VideoTrial/fbbe9b03f9f7654c808641dec9a2cba619705513/script.js"></script>
+    <script src="https://cdn.rawgit.com/muaz-khan/DetectRTC/master/DetectRTC.js"></script>
+    <meta charset="utf-8" />
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
+      crossorigin="anonymous"
+    />
+
+    <style>
+      .buttons {
+        position: absolute;
+        bottom: 2%;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 5em;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+      }
+
+      .instruction {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+      }
+
+      .imageCenter {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        top: 25%;
+        right: 0;
+        width: 100%;
+        height: 5em;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+      }
+
+      .enableCam {
+        position: absolute;
+        top: 30%;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+      }
+
+      .enableCamRetryBtn {
+        position: absolute;
+        top: 65%;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 11;
+      }
+
+      .videoCenter {
+        position: absolute;
+        bottom: 0;
+        left: 12%;
+        top: 0;
+        bottom: 10%;
+        right: 0;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+      }
+
+      .banner {
+        position: fixed;
+        top: 0;
+        right: 2%;
+      }
+
+      .banner_2 {
+        position: fixed;
+        top: 0;
+        left: 2%;
+      }
+
+      .clickDiv {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 80%;
+        display: flex;
+        z-index: 10;
+        visibility: hidden;
+      }
+
+      .video {
+        position: absolute;
+        width: 100%;
+        height: 5em;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9;
+      }
+
+      .say-hi-button {
+        padding: 0.25em;
+        border-radius: 4px;
+        border: none;
+        background: white;
+        color: black;
+        width: 4em;
+        height: 2em;
+      }
+
+      .btn:active {
+        box-shadow: 0 5px #666;
+        transform: translateY(4px);
+      }
+
+      button {
+        padding: 10px 20px;
+        font-size: 15px;
+        text-align: center;
+        cursor: pointer;
+        outline: none;
+        color: #fff;
+        background-color: #66CD00;
+        border: none;
+        border-radius: 19px;
+        box-shadow: 0 5px #999;
+        z-index: 11;
+      }
+
+      button:hover {
+        background-color: #458B00;
+      }
+
+      button:active {
+        background-color: #458B00;
+        box-shadow: 0 2px #666;
+        transform: translateY(4px);
+      }
+
+      #videoUI {
+        visibility: hidden;
+      }
+
+      #linkedinbutton {
+        visibility: hidden;
+      }
+
+      #phonebutton {
+        visibility: hidden;
+      }
+
+      #websitebutton {
+        visibility: hidden;
+      }
+
+      #youtubebutton {
+        visibility: hidden;
+      }
+
+      #ARUI {
+        visibility: hidden;
+      }
+
+      #camError {
+        visibility: hidden;
+      }
+
+      .img {
+        animation: MoveUpDown 2s linear infinite;
+      }
+
+      @keyframes MoveUpDown {
+        0%,
+        100% {
+          top: 0;
+        }
+        50% {
+          top: 25px;
+        }
+      }
+
+      a {
+        text-decoration: none;
+        color: white;
+      }
+    </style>
+  </head>
+  <body style="margin : 0px; overflow: hidden;">
+    <div id="camError">
+      <img
+        class="banner_2 img"
+        src="/images/camera.png"
+        style="width:50; height: auto;"
+      />
+
+      <div class="enableCam container">
+        <div class="row">
+          <div class="col-12">
+            <h1 style="text-align:center; ">
+              Enable Your Camera
+            </h1>
+            <p style="text-align:center; font-size: 85%;">
+              Accessing your device camera is required to be able to experience
+              AR, please enable your camera when asked.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="enableCamRetryBtn container">
+        <div class="row">
+          <div class="text-center">
+            <p>
+              Reload this site after allowing camera access, to view the content
+              in AR.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="buttons container justify-content-center">
+      <div class="row">
+        <div class="col-3">
+          <button id="linkedinbutton" class="btn">
+            <img
+              src="/images/email.png"
+              alt="Mail Button"
+              style="width:45px; height:60px;"
+            />
+          </button>
+        </div>
+        <div class="col-3">
+          <button id="phonebutton" class="btn">
+            <img
+              src="/images/phone.png"
+              alt="Phone Button"
+              style="width:45px; height:60px;"
+            />
+          </button>
+        </div>
+        <div class="col-3">
+          <button id="websitebutton" class="btn">
+            <img
+              src="/images/web.png"
+              alt="Website Button"
+              style="width:45px; height:60px;"
+            />
+          </button>
+        </div>
+        <div class="col-3">
+          <button id="youtubebutton" class="btn">
+            <img
+              src="/images/youtube-V2.png"
+              alt="Youtube Button"
+              style="width:45px; height:60px;"
+            />
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="videoCenter container justify-content-center">
+      <div class="row">
+        <div class="col-12">
+          <video
+            id="videoUI"
+            width="80%"
+            height="auto"
+            style="max-height : 200px;"
+            response-type="arraybuffer"
+            preload="auto"
+            autoplay="false"
+            crossorigin="anonymous"
+            webkit-playsinline
+            playsinline
+            loop
+          >
+            <source
+              src="/video/cardVideo.mp4"
+              type="video/mp4"
+            />
+            Your browser does not support HTML video.
+          </video>
+        </div>
+      </div>
+    </div>
+
+    <div class="clickDiv" id="clickDiv"></div>
+
+    <div id="ARUI">
+      <div class="imageCenter container justify-content-center">
+        <div class="row">
+          <div class="col-6">
+            <img
+              id="midImage"
+              src="/images/pattern-ShahidDesigns.png"
+              style="height: 200px; width: 200px; opacity: 0.45;"
+            />
+          </div>
+        </div>
+      </div>
+
+      <img
+        class="banner"
+        src="/images/banner.png"
+        style="height: 25px; width:75px; background-color: rgba(255, 255, 255, 0.5); border-radius: 0px 0px 10px 10px;"
+      />
+
+      <div class="instruction card mb-1" id="bottomInstruction">
+        <div class="row g-0">
+          <div class="col-2">
+            <img
+              src="/images/pattern-ShahidDesigns.png"
+              alt="Instruction"
+              style="height: 100x;width: 100px;"
+            />
+          </div>
+          <div class="col-2"></div>
+          <div class="col-6">
+            <div class="card-body">
+              <p class="card-text">
+                Point the camera to this image to see the AR magic.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <a-scene
+      id="scene"
+      cursor="rayOrigin: mouse"
+      raycaster="interval: 1000; objects: .clickable"
+      vr-mode-ui="enabled: false;"
+      renderer="antialias: true; alpha: true; precision: mediump;"
+      embedded
+      arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false; patternRatio: 0.9;"
+    >
+      <a-marker-camera
+        emitevents="true"
+        smooth="true"
+        smoothcount="5"
+        smoothtolerance="0.001"
+        preset="custom"
+        type="pattern"
+        url="/pattern/pattern-ShahidDesigns.patt"
+        button
+      >
+        <a-marker
+          type="pattern"
+          url="/pattern/pattern-ShahidDesigns.patt"
+          smoothcount="0"
+          smoothtolerance="0.01"
+          button
+        >
+          <a-entity vimeo="id: 543486921;  autoplay: true;" id="vimeo-player">
+            <a-plane
+              id="plane"
+              color="#0000ff"
+              scale="3 1.5 1"
+              position="0 0 0.0"
+              rotation="-90 0 0"
+            ></a-plane>
+          </a-entity>
+        </a-marker>
+      </a-marker-camera>
+      <a-entity camera mouse-cursor position="0 0 0"></a-entity>
+    </a-scene>
+
+    <script>
+      var Lbutton = document.querySelector("#linkedinbutton");
+      var Pbutton = document.querySelector("#phonebutton");
+      var Wbutton = document.querySelector("#websitebutton");
+      var Ybutton = document.querySelector("#youtubebutton");
+      // var thumbnail = document.querySelector("#Play-Image");
+      let firstTimeMarkerFound = 0;
+      let firstforvideoui = true;
+      let allow_clicks = false;
+      var clicked = false;
+      let firstTime = true;
+      var videoUI = document.querySelector("#videoUI");
+      var vidCurrentTime = 0;
+
+      var bottomInstruction = document.querySelector("#bottomInstruction");
+
+      // ************ Vimeo Stuff ************ //
+      var vimeo = document.querySelector("#vimeo-player");
+      var vimeoPlayerComponenet = document.querySelector("#vimeo-player")
+        .components;
+      var vimeoPlayer = vimeoPlayerComponenet.vimeo;
+      var scene = document.querySelector("a-scene");
+      console.log(vimeoPlayer.player);
+      // ************ Vimeo Stuff ************ //
+
+      scene.addEventListener("markerLost", evt => {
+        console.log("Pausing");
+        vimeoPlayer.player.pause();
+        // Lbutton.style.visibility = "hidden";
+        // Pbutton.style.visibility = "hidden";
+        // Wbutton.style.visibility = "hidden";
+        // Ybutton.style.visibility = "hidden";
+        // bottomInstruction.style.visibility = "visible";
+        console.log("Pausing");
+
+        allow_clicks = false;
+        // vidCurrentTime = Video_0.currentTime;
+        if (!firstforvideoui) {
+          videoUI.style.visibility = "visible";
+          // videoUI.currentTime = vidCurrentTime;
+          videoUI.play();
+        }
+        if (!allow_clicks && !clicked) {
+          bottomInstruction.style.visibility = "visible";
+          midImage.style.visibility = "visible";
+        }
+      });
+
+      scene.addEventListener("markerFound", evt => {
+        //vimeoPlayer.player.play();
+        console.log("playing");
+        // Lbutton.style.visibility = "visible";
+        // Pbutton.style.visibility = "visible";
+        // Wbutton.style.visibility = "visible";
+        // Ybutton.style.visibility = "visible";
+        // bottomInstruction.style.visibility = "hidden";
+
+        firstTimeMarkerFound += 1;
+
+        if (firstTimeMarkerFound > 1) {
+          bottomInstruction.style.visibility = "hidden";
+          midImage.style.visibility = "hidden";
+          clickDiv.style.visibility = "visible";
+          allow_clicks = true;
+          console.log(allow_clicks);
+        }
+
+        if (!firstTime) {
+          vimeoPlayer.player.play();
+          // Video_0.currentTime = vidCurrentTime;
+          // Video_0.play();
+          videoUI.style.visibility = "hidden";
+          videoUI.pause();
+          // vidCurrentTime = videoUI.currentTime;
+        }
+      });
+
+      clickDiv.addEventListener("click", evt => {
+        console.log("Click Event !!!");
+        if (allow_clicks) {
+          console.log("Inside Allow clickDiv");
+          // thumbnail.setAttribute("visible", false);
+          Lbutton.style.visibility = "visible";
+          Pbutton.style.visibility = "visible";
+          Wbutton.style.visibility = "visible";
+          Ybutton.style.visibility = "visible";
+
+          videoUI.play();
+          videoUI.pause();
+
+          vimeoPlayer.player.play();
+          firstTime = false;
+          firstforvideoui = false;
+          clicked = true;
+        }
+      });
+
+      Lbutton.addEventListener("click", function(evt) {
+        window.location.href = "mailto: shahid@ecnetsolutions.ca";
+      });
+
+      Wbutton.addEventListener("click", function(evt) {
+        window.open("https://www.ecnetsolutions.ca", "_blank");
+      });
+
+      Pbutton.addEventListener("click", function(evt) {
+        window.location = "tel: +1-416-902-4508";
+      });
+
+      Ybutton.addEventListener("click", function(evt) {
+        window.open(
+          "https://www.youtube.com/channel/UC3CianWhgE8ieSDPWUIWhHg",
+          "_blank"
+        );
+      });
+
+      //       clickDiv.addEventListener("click", evt => {
+      //         console.log("Click Event !!!");
+      //         if (allow_clicks) {
+      //           console.log("Inside Allow clickDiv");
+      //           thumbnail.setAttribute("visible", false);
+      //           Lbutton.style.visibility = "visible";
+      //           Pbutton.style.visibility = "visible";
+      //           Wbutton.style.visibility = "visible";
+      //           Ybutton.style.visibility = "visible";
+
+      //           // videoUI.play();
+      //           // videoUI.pause();
+
+      //           // Video_0.play();
+      //           firstTime = false;
+      //           firstforvideoui = false;
+      //           clicked = true;
+      //         }
+      //       });
+
+      //       AFRAME.registerComponent("foo", {
+      //         init: function() {
+      //           let loader = document.querySelector("#loadingEl");
+      //           this.el.addEventListener("loaded", e => {
+      //             console.log("loaded");
+      //             loader.setAttribute("visible", "false");
+      //           });
+
+      //           this.el.sceneEl.addEventListener("camera-error", () => {
+      //             // redirect to custom URL
+      //             alert("Hey");
+      //             console.log("Hey");
+      //           });
+
+      //           // let anim = document.querySelector("a-animation");
+      //           // let Video_0 = document.querySelector("#Video_Asset_0");
+
+      //           scene.addEventListener("markerFound", evt => {
+      //             console.log("Found");
+      //             firstTimeMarkerFound += 1;
+
+      //             if (firstTimeMarkerFound > 1) {
+      //               bottomInstruction.style.visibility = "hidden";
+      //               midImage.style.visibility = "hidden";
+      //               clickDiv.style.visibility = "visible";
+      //               allow_clicks = true;
+      //               console.log(allow_clicks);
+      //             }
+
+      //             if (!firstTime) {
+      //               vimeoPlayer.player.play();
+      //               // Video_0.currentTime = vidCurrentTime;
+      //               // Video_0.play();
+      //               // videoUI.style.visibility = "hidden";
+      //               // videoUI.pause();
+      //               // vidCurrentTime = videoUI.currentTime;
+      //             }
+      //           });
+
+      //           scene.addEventListener("markerLost", evt => {
+      //             allow_clicks = false;
+      //             vimeoPlayer.player.pause();
+      //             console.log("Lost");
+      //             // vidCurrentTime = Video_0.currentTime;
+      //             if (!firstforvideoui) {
+      //               // videoUI.style.visibility = "visible";
+      //               // videoUI.currentTime = vidCurrentTime;
+      //               // videoUI.play();
+      //             }
+      //             if (!allow_clicks && !clicked) {
+      //               bottomInstruction.style.visibility = "visible";
+      //               midImage.style.visibility = "visible";
+      //             }
+      //           });
+
+      // //           clickDiv.addEventListener("click", evt => {
+      // //             console.log("Click Event !!!");
+      // //             if (allow_clicks) {
+      // //               console.log("Inside Allow clickDiv");
+      // //               thumbnail.setAttribute("visible", false);
+      // //               Lbutton.style.visibility = "visible";
+      // //               Pbutton.style.visibility = "visible";
+      // //               Wbutton.style.visibility = "visible";
+      // //               Ybutton.style.visibility = "visible";
+
+      // //               videoUI.play();
+      // //               videoUI.pause();
+
+      // //               Video_0.play();
+      // //               firstTime = false;
+      // //               firstforvideoui = false;
+      // //               clicked = true;
+      // //             }
+      // //           });
+
+      //           Lbutton.addEventListener("click", function(evt) {
+      //             window.location.href = "mailto: shahid@ecnetsolutions.ca";
+      //           });
+
+      //           Wbutton.addEventListener("click", function(evt) {
+      //             window.open("https://www.ecnetsolutions.ca", "_blank");
+      //           });
+
+      //           Pbutton.addEventListener("click", function(evt) {
+      //             window.location = "tel: +1-416-902-4508";
+      //           });
+
+      //           Ybutton.addEventListener("click", function(evt) {
+      //             window.open(
+      //               "https://www.youtube.com/channel/UC3CianWhgE8ieSDPWUIWhHg",
+      //               "_blank"
+      //             );
+      //           });
+      //         }
+      //       });
+
+      DetectRTC.load(function() {
+        if (DetectRTC.isWebsiteHasWebcamPermissions) {
+          document.querySelector("#ARUI").style.visibility = "visible";
+        } //else {
+        //     console.log("User gave camera permission");
+        //     document.querySelector("#unblockCam").style.visibility = "visible";
+        //     document.querySelector("#enableCam").style.visibility = "visible";
+        //   }
+
+        // if (
+        //   DetectRTC.browser.name != "Chrome" &&
+        //   DetectRTC.browser.name != "Firefox"
+        // ) {
+        //   document.querySelector("#bestExperience").style.visibility = "visible";
+        // }
+      });
+    </script>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

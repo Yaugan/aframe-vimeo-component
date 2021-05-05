@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Enable Camera Access</title>
+    <meta charset="UTF-8" />
+    <script src="https://cdn.rawgit.com/muaz-khan/DetectRTC/master/DetectRTC.js"></script>
+    <style>
+      body {
+        background-color: #555555;
+      }
+
+      h1,
+      p {
+        color: white;
+        text-align: center;
+        font-size: 35px;
+        font-family: Tahoma, sans-serif;
+      }
+      h1 {
+        font-size: 40px;
+        font-weight: bold;
+        font-family: Dosis, sans-serif;
+      }
+      button {
+        padding: 15px 25px;
+        font-size: 32px;
+        text-align: center;
+        cursor: pointer;
+        outline: none;
+        color: #fff;
+        background-color: #66CD00;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 9px #999;
+      }
+
+      button:hover {
+        background-color: #458B00;
+      }
+
+      button:active {
+        background-color: #458B00;
+        box-shadow: 0 5px #666;
+        transform: translateY(4px);
+      }
+
+      div {
+        text-align: center;
+      }
+
+      .Main {
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+        width: 90%;
+      }
+
+      .img {
+        animation: MoveUpDown 2s linear infinite;
+        position: absolute;
+        left: 10%;
+        bottom: 0;
+      }
+
+      @keyframes MoveUpDown {
+        0%,
+        100% {
+          top: 0;
+        }
+        50% {
+          top: 25px;
+        }
+      }
+
+      a {
+        text-decoration: none;
+        color: white;
+      }
+
+      #enableCam {
+        visibility: hidden;
+      }
+
+      #androidWV {
+        visibility: hidden;
+      }
+
+      #iosWV {
+        visibility: hidden;
+      }
+
+      #noSupport {
+        visibility: hidden;
+      }
+
+      #noSupportonIOS {
+        visibility: hidden;
+      }
+
+      #unblockCam {
+        visibility: hidden;
+      }
+
+      #samsungBrowser {
+        visibility: hidden;
+      }
+
+      #bestExperience {
+        visibility: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="unblockCam">
+      <div class="img">
+        <img
+          src="assets/images/unblockCam.png"
+          style="width: 200px; height: 200px;"
+        />
+      </div>
+    </div>
+    <div id="enableCam">
+      <div class="Main">
+        <img
+          src="assets/images/camera.png"
+          style="width: 10%; height: 10%;"
+          alt="No Camera Access Logo"
+        />
+        <h1>
+          Enable Your Camera
+        </h1>
+        <p>
+          Accessing your device camera is required to be able to use AR Click
+          Scan, please enable your camera when asked.
+        </p>
+        <div class="text-center">
+          <!--           <button type="button">
+            <a data-localize="androidWV_retry" target="_self" href="index.html"
+              >RETRY</a
+            >
+          </button> -->
+          <p>
+            Reload the site after allowing camera access to view the contents in
+            AR.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div id="androidWV">
+      <div class="Main">
+        <h1>
+          Unsupported Browser
+        </h1>
+        <p>
+          We use WebRTC technology to be able to show you augmented reality
+          experiences, sadly this window browser doesn't support WebRTC, please
+          try again with Google Chrome.
+        </p>
+        <div class="text-center">
+          <button type="button">
+            <a
+              data-localize="androidWV_retry"
+              target="_self"
+              href="intent://webar-ui-shaheedbuttonvideo.glitch.me#Intent;scheme=https;package=com.android.chrome;end;"
+              >Open Chrome</a
+            >
+          </button>
+        </div>
+      </div>
+    </div>
+    <!--     href="x-web-search://?https://error-trapping-id-jatin-final.glitch.me" -->
+    <div id="iosWV">
+      <div class="Main">
+        <h1>
+          Unsupported Browser
+        </h1>
+        <p>
+          We use WebRTC technology to be able to show you augmented reality
+          experiences, sadly this window browser doesn't support WebRTC, please
+          click the button to copy website link and to open Safari.
+        </p>
+        <button id="Copy">Open Safari</button>
+      </div>
+    </div>
+    <div id="bestExperience">
+      <div class="Main">
+        <h1>
+          Unsupported Browser
+        </h1>
+        <p>
+          We would request you to switch to chrome for best experience of
+          Augmented Reality in your browser.
+        </p>
+        <div class="text-center">
+          <button type="button">
+            <a
+              data-localize="noSupportoniOS_retry"
+              target="_self"
+              href="intent://we
+                    bar-ui-shaheedbuttonvideo.glitch.me#Intent;scheme=https;package=com.android.chrome;end;"
+              >Open Chrome</a
+            >
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function Clipboard_CopyTo(value) {
+        var tempInput = document.createElement("input");
+        tempInput.value = value;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempInput);
+      }
+
+      document.querySelector("#Copy").onclick = function() {
+        Clipboard_CopyTo("https://error-trapping-id-jatin-final.glitch");
+        window.location.href = "x-web-search://?";
+        alert("Paste the ");
+      };
+
+      var isSamsung = false;
+
+      DetectRTC.load(function() {
+        // }
+
+        if (
+          navigator.userAgent.match(
+            /SAMSUNG|Samsung|SGH-[I|N|T]|GT-[I|N]|SM-[A|N|P|T|Z]|SHV-E|SCH-[I|J|R|S]|SPH-L/i
+          )
+        ) {
+          isSamsung = true;
+          document.querySelector("#bestExperience").style.visibility =
+            "visible";
+        }
+
+        let userAgentString = navigator.userAgent;
+        // alert(userAgentString);
+
+        if (
+          DetectRTC.osName === "Android" ||
+          DetectRTC.osName === "Linux" ||
+          DetectRTC.osName === "UNIX"
+        ) {
+          if (
+            DetectRTC.browser.name != "Chrome" &&
+            DetectRTC.browser.name != "Firefox"
+          ) {
+            document.querySelector("#bestExperience").style.visibility =
+              "visible";
+          } else if (
+            DetectRTC.browser.name === "Chrome" &&
+            isSamsung == false
+          ) {
+            console.log("It's chrome");
+            window.location.href = "https://ar-streaming-integration.glitch.me/ar";
+          } else if (DetectRTC.browser.name === "Firefox") {
+            console.log("It's firefox");
+            window.location.href = "https://ar-streaming-integration.glitch.me/ar";
+          }
+        } else if (userAgentString.indexOf("iOS") > -1) {
+          // alert("Inside iOS" +DetectRTC.browser.name);
+          if (DetectRTC.browser.name !== "Safari") {
+            document.querySelector("#iosWV").style.visibility = "visible";
+          } else {
+            window.location.href = "https://ar-streaming-integration.glitch.me";
+          }
+        } else if (DetectRTC.osName === "Windows") {
+          if (DetectRTC.isWebRTCSupported === false) {
+            document.querySelector("#androidWV").style.visibility = "visible";
+          }
+        } else if (userAgentString.indexOf("Mac OS") > -1) {
+          // alert("Inside Mac OS" + DetectRTC.browser.name);
+          if (DetectRTC.browser.name !== "Safari") {
+            document.querySelector("#iosWV").style.visibility = "visible";
+          } else {
+            window.location.href = "https://ar-streaming-integration.glitch.me";
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
